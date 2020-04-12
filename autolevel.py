@@ -20,6 +20,8 @@ def autolevel(serialport):
 	print_std('Printer homed')
 	print_std('Autoleveling')
 
+	serialport.send('M117 Autoleveling')
+	serialport.wait_for_line('ok')
 	serialport.send('G29')
 	serialport.wait_for_line('Bilinear Leveling Grid:')
 	lines = []
@@ -54,8 +56,12 @@ def autolevel(serialport):
 					cmap='RdBu', edgecolor='black')
 
 	serialport.reset_input_buffer()
+	delay(3)
 	print_std('Disabling steppers')
-	serialport.send('M17')
+	serialport.send('M17') # Doesnt actully disable the steppers for some reason
+	serialport.wait_for_line('ok')
+	delay(1)
+	serialport.send('M117 Steppers disabled')
 	serialport.wait_for_line('ok')
 
 	plt.show()
